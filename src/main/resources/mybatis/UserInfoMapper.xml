@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tempus.cn.gss.dao.UserInfoMapper">
+    <resultMap id="resultMap" type="com.tempus.cn.gss.bean.UserInfo">
+        <result column="USER_NAME" javaType="java.lang.String" property="userName"/>
+        <result column="DEPARTMENT_NAME" javaType="java.lang.String" property="departmentName"/>
+    </resultMap>
+
+    <resultMap id="customerResultMap" type="com.tempus.cn.gss.bean.CustomerInfoModel">
+        <result column="NAME" javaType="java.lang.String" property="customerName"/>
+        <result column="CUSTOMER_NO" javaType="java.lang.String" property="customerNo"/>
+        <result column="BUSINESS_LINE" javaType="java.lang.String" property="orderSource"/>
+    </resultMap>
+
+    <select id="queryUserName" parameterType="java.lang.String" resultMap="resultMap">
+       select sm.`ID`,sm.`NAME` as `USER_NAME`, sd.`NAME` AS `DEPARTMENT_NAME`
+       from SM_USER sm
+       left join SM_DEPT sd ON sm.`DEPT_ID` = sd.`ID`
+       where sm.`ID`=#{id}
+    </select>
+
+    <select id="queryCustomerInfo" parameterType="java.lang.String" resultMap="customerResultMap">
+      select `ID`,`NAME`,`CUSTOMER_NO`,`BUSINESS_LINE` from CPS_CUSTOMER t where t.`CUSTOMER_NO`=#{customerNo}
+    </select>
+</mapper>

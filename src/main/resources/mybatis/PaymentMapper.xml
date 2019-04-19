@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tempus.cn.gss.dao.PaymentMapper">
+    <resultMap id="resultMap" type="com.tempus.cn.gss.bean.PaymentInfoModel">
+        <result column="PAY_NO" javaType="java.lang.String" property="paymentFlownNum" />
+        <result column="PAY_WAY" javaType="java.lang.String" property="paymentMethod" />
+       <!-- <result column="" javaType="" property="" />-->
+    </resultMap>
+
+    <select id="queryPaymentInfo" parameterType="java.lang.String" resultMap="resultMap">
+      select
+         ppw.`NAME` AS PAY_WAY,
+         papi.`ALL_PAY_INFO_NO` AS PAY_NO
+      from OS_ACTUALAMOUNTRECORD oa
+      left  join PS_ALL_PAY_INFO papi on
+        oa.`PAY_NO` = papi.`ALL_PAY_INFO_NO`
+      left join PS_PAY_WAY ppw on
+        ppw.`CODE` =  papi.`PAY_WAY_CODE`
+      where oa.`RECORD_NO` = #{saleOrderNo}
+    </select>
+</mapper>

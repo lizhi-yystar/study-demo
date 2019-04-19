@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tempus.cn.gss.dao.ExportInfoMapper">
+    <resultMap id="resultMap" type="com.tempus.cn.gss.bean.model.ExportInfoModel">
+        <result property="saleDepartment" javaType="java.lang.String" column="SALE_DEPARTMENT"/>
+        <result property="customerNameCn" javaType="java.lang.String" column="CUSTOMER_NAME_CN"/>
+        <result property="customerNo" javaType="java.lang.String" column="CUSTOMER_NO"/>
+        <result property="carrier" javaType="java.lang.String" column="CARRIER"/>
+        <result property="ticketNo" javaType="java.lang.String" column="TICKET_NO"/>
+        <result property="trip" javaType="java.lang.String" column="TRIP"/>
+        <result property="airNo" javaType="java.lang.String" column="AIR_NO"/>
+        <result property="seat" javaType="java.lang.String" column="SEAT"/>
+        <result property="issuedTime" javaType="java.util.Date" column="ISSUED_TIME"/>
+        <result property="takeOffTime" javaType="java.util.Date" column="TAKE_OFF_TIME"/>
+        <result property="saleTicketPrice" javaType="java.math.BigDecimal" column="SALE_TICKET_PRICE"/>
+        <result property="saleTax" javaType="java.math.BigDecimal" column="SALE_TAX"/>
+        <result property="saleRebate" javaType="java.math.BigDecimal" column="SALE_REBATE"/>
+        <result property="saleRebateMoney" javaType="java.math.BigDecimal" column="SALE_REBATE_MONEY"/>
+        <result property="salePrice" javaType="java.math.BigDecimal" column="SALE_PRICE"/>
+        <result property="serviceFee" javaType="java.math.BigDecimal" column="SERVICE_FEE"/>
+        <result property="profit" javaType="java.math.BigDecimal" column="PROFIT"/>
+        <result property="departmentProfit" javaType="java.math.BigDecimal" column="DEPARTMENT_PROFIT"/>
+        <result property="shoppingTicketPrice" javaType="java.math.BigDecimal" column="SHOPPING_TICKET_PRICE"/>
+        <result property="shoppingTax" javaType="java.math.BigDecimal" column="SHOPPING_TAX"/>
+        <result property="shoppingRebate" javaType="java.math.BigDecimal" column="SHOPPING_REBATE"/>
+        <result property="shoppingRebateMoney" javaType="java.math.BigDecimal" column="SHOPPING_REBATE_MONEY"/>
+        <result property="shoppingPrice" javaType="java.math.BigDecimal" column="SHOPPING_PRICE"/>
+        <result property="passengerName" javaType="java.lang.String" column="PASSENGER_NAME"/>
+        <result property="pnr" javaType="java.lang.String" column="PNR"/>
+        <result property="ticketStatus" javaType="java.lang.String" column="TICKET_STATUS"/>
+        <result property="booker" javaType="java.lang.String" column="BOOKER"/>
+        <result property="ticketDrawer" javaType="java.lang.String" column="TICKET_DRAWER"/>
+        <result property="channel" javaType="java.lang.String" column="CHANNEL"/>
+        <result property="saleOrderNo" javaType="java.lang.String" column="SALE_ORDER_NO"/>
+        <result property="paymentMethod" javaType="java.lang.String" column="PAYMENT_METHOD"/>
+        <result property="paymentFlownNum" javaType="java.lang.String" column="PAYMENT_FLOWN_NUM"/>
+        <result property="tripNo" javaType="java.lang.String" column="TRIP_NO"/>
+        <result property="settleMentAmount" javaType="java.math.BigDecimal" column="SETTLEMENT_AMOUNT"/>
+        <result property="exchangeRate" javaType="java.math.BigDecimal" column="EXCHANGE_RATE"/>
+        <result property="currency" javaType="java.lang.String" column="CURRENCY"/>
+        <result property="company" javaType="java.lang.String" column="COMPANY"/>
+        <result property="orderSource" javaType="java.lang.String" column="ORDER_SOURCE"/>
+    </resultMap>
+
+    <sql id="baseSql">
+        `ID`,`SALE_DEPARTMENT`,`CUSTOMER_NAME_CN`,`CUSTOMER_NO`,`CARRIER`,
+        `TICKET_NO`,`TRIP`,`AIR_NO`,`SEAT`,`ISSUED_TIME`,`TAKE_OFF_TIME`,
+        `SALE_TICKET_PRICE`,`SALE_TAX`,`SALE_REBATE`,`SALE_REBATE_MONEY`,
+        `SALE_PRICE`,`SERVICE_FEE`,`PROFIT`,`DEPARTMENT_PROFIT`,`SHOPPING_PRICE`,
+        `SHOPPING_TICKET_PRICE`,`SHOPPING_TAX`,`SHOPPING_REBATE`,`SHOPPING_REBATE_MONEY`,
+        `SHOPPING_PRICE`,`PASSENGER_NAME`,`PNR`,`TICKET_STATUS`,`BOOKER`,`TICKET_DRAWER`,
+        `CHANNEL`,`SALE_ORDER_NO`,`PAYMENT_METHOD`,`PAYMENT_FLOWN_NUM`,`TRIP_NO`,`SETTLEMENT_AMOUNT`,
+        `EXCHANGE_RATE`,`CURRENCY`,`COMPANY`,`ORDER_SOURCE`
+    </sql>
+
+    <select id="queryCount" resultType="java.lang.Long" parameterType="com.tempus.cn.gss.bean.form.QueryForm">
+        select count(0) from IFT_TICKET_SUMMARY where 1=1
+         <if test="customerNo !=null and customerNo !=''">
+             and `CUSTOMER_NO`=#{customerNo}
+         </if>
+         <if test="cabins!=null and cabins!=''">
+            and `TRIP`=#{cabins}
+         </if>
+         <if test="ticketNo !=null and ticketNo!=''">
+            and `TICKET_NO`=#{ticketNo}
+         </if>
+         <if test="endDate !='' and endDate!=null">
+             <![CDATA[
+            and `ISSUED_TIME` >= DATE_FORMAT(#{endDate},'%Y-%m-%d')
+             ]]>
+         </if>
+        <if test="startDate !='' and startDate!=null">
+            <![CDATA[
+            and `ISSUED_TIME` >= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+            ]]>
+        </if>
+    </select>
+
+    <select id="pageQuery" resultMap="resultMap" parameterType="com.tempus.cn.gss.bean.form.QueryForm">
+        select <include refid="baseSql"/> from IFT_TICKET_SUMMARY where 1=1
+        <if test="customerNo !=null and customerNo !=''">
+            and `CUSTOMER_NO`=#{customerNo}
+        </if>
+        <if test="cabins!=null and cabins!=''">
+            and `TRIP`=#{cabins}
+        </if>
+        <if test="ticketNo !=null and ticketNo==''">
+            and `TICKET_NO`=#{ticketNo}
+        </if>
+        <if test="endDate !='' and endDate!=null">
+            <![CDATA[
+            and `ISSUED_TIME` >= DATE_FORMAT(#{endDate},'%Y-%m-%d')
+             ]]>
+        </if>
+        <if test="startDate !='' and startDate!=null">
+            <![CDATA[
+            and `ISSUED_TIME` >= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+            ]]>
+        </if>
+    </select>
+
+    <insert id="save" parameterType="com.tempus.cn.gss.bean.model.ExportInfoModel" useGeneratedKeys="true" keyProperty="id">
+      insert into IFT_TICKET_SUMMARY (
+            `SALE_DEPARTMENT`,`CUSTOMER_NAME_CN`,`CUSTOMER_NO`,`CARRIER`,
+        `TICKET_NO`,`TRIP`,`AIR_NO`,`SEAT`,`ISSUED_TIME`,`TAKE_OFF_TIME`,
+        `SALE_TICKET_PRICE`,`SALE_TAX`,`SALE_REBATE`,`SALE_REBATE_MONEY`,
+        `SALE_PRICE`,`SERVICE_FEE`,`PROFIT`,`DEPARTMENT_PROFIT`,`SHOPPING_PRICE`,
+        `SHOPPING_TICKET_PRICE`,`SHOPPING_TAX`,`SHOPPING_REBATE`,`SHOPPING_REBATE_MONEY`,
+        `PASSENGER_NAME`,`PNR`,`TICKET_STATUS`,`BOOKER`,`TICKET_DRAWER`,
+        `CHANNEL`,`SALE_ORDER_NO`,`PAYMENT_METHOD`,`PAYMENT_FLOWN_NUM`,`TRIP_NO`,`SETTLEMENT_AMOUNT`,
+        `EXCHANGE_RATE`,`CURRENCY`,`COMPANY`,`ORDER_SOURCE`,`CREATE_TIME`
+           )value(
+            #{saleDepartment},#{customerNameCn},#{customerNo},#{carrier},
+            #{ticketNo}, #{trip},#{airNo},#{seat},#{issuedTime},#{takeOffTime},
+            #{saleTicketPrice},#{saleTax},#{saleRebate},#{saleRebateMoney},
+            #{salePrice},#{serviceFee},#{profit},#{departmentProfit},#{shoppingPrice},
+            #{shoppingTicketPrice},#{shoppingTax},#{shoppingRebate},#{shoppingRebateMoney},
+            #{passengerName},#{pnr},#{ticketStatus},#{booker},#{ticketDrawer},
+            #{channel},#{saleOrderNo},#{paymentMethod},#{paymentFlownNum},#{tripNo},#{settleMentAmount},
+            #{exchangeRate},#{currency},#{company},#{orderSource},#{createSynTime}
+           )
+    </insert>
+
+    <insert id="batchSave" parameterType="java.util.List">
+       insert into IFT_TICKET_SUMMARY (
+        `SALE_DEPARTMENT`,`CUSTOMER_NAME_CN`,`CUSTOMER_NO`,`CARRIER`,
+        `TICKET_NO`,`TRIP`,`AIR_NO`,`SEAT`,`ISSUED_TIME`,`TAKE_OFF_TIME`,
+        `SALE_TICKET_PRICE`,`SALE_TAX`,`SALE_REBATE`,`SALE_REBATE_MONEY`,
+        `SALE_PRICE`,`SERVICE_FEE`,`PROFIT`,`DEPARTMENT_PROFIT`,`SHOPPING_PRICE`,
+        `SHOPPING_TICKET_PRICE`,`SHOPPING_TAX`,`SHOPPING_REBATE`,`SHOPPING_REBATE_MONEY`,
+        `PASSENGER_NAME`,`PNR`,`TICKET_STATUS`,`BOOKER`,`TICKET_DRAWER`,
+        `CHANNEL`,`SALE_ORDER_NO`,`PAYMENT_METHOD`,`PAYMENT_FLOWN_NUM`,`TRIP_NO`,`SETTLEMENT_AMOUNT`,
+        `EXCHANGE_RATE`,`CURRENCY`,`COMPANY`,`ORDER_SOURCE`,`BOOKER_ID`,`TICKET_DRAWER_ID`,`SALE_DEPARTMENT_ID`,
+        `CREATE_TIME`
+       )values
+       <foreach collection="list" item="item" separator=",">
+           (
+           #{item.saleDepartment},#{item.customerNameCn},#{item.customerNo},#{item.carrier},
+           #{item.ticketNo}, #{item.trip},#{item.airNo},#{item.seat},#{item.issuedTime},#{item.takeOffTime},
+           #{item.saleTicketPrice},#{item.saleTax},#{item.saleRebate},#{item.saleRebateMoney},
+           #{item.salePrice},#{item.serviceFee},#{item.profit},#{item.departmentProfit},#{item.shoppingPrice},
+           #{item.shoppingTicketPrice},#{item.shoppingTax},#{item.shoppingRebate},#{item.shoppingRebateMoney},
+           #{item.passengerName},#{item.pnr},#{item.ticketStatus},#{item.booker},#{item.ticketDrawer},
+           #{item.channel},#{item.saleOrderNo},#{item.paymentMethod},#{item.paymentFlownNum},#{item.tripNo},#{item.settleMentAmount},
+           #{item.exchangeRate},#{item.currency},#{item.company},#{item.orderSource},#{item.bookerId},#{item.ticketDrawerId},#{item.departmentId},
+           #{item.createSynTime}
+           )
+       </foreach>
+    </insert>
+
+ <select id="queryExportInfos" parameterType="com.tempus.cn.gss.bean.form.QueryForm" resultMap="resultMap">
+     select <include refid="baseSql"/> from IFT_TICKET_SUMMARY where 1=1
+     <if test="customerNo !=null and customerNo !=''">
+         and `CUSTOMER_NO`=#{customerNo}
+     </if>
+     <if test="cabins!=null and cabins!=''">
+         and `TRIP`=#{cabins}
+     </if>
+     <if test="ticketNo !=null and ticketNo==''">
+         and `TICKET_NO`=#{ticketNo}
+     </if>
+     <if test="endDate !='' and endDate!=null">
+         <![CDATA[
+            and `ISSUED_TIME` >= DATE_FORMAT(#{endDate},'%Y-%m-%d')
+             ]]>
+     </if>
+     <if test="startDate !='' and startDate!=null">
+         <![CDATA[
+            and `ISSUED_TIME` >= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+            ]]>
+     </if>
+     limit #{currentIndex},#{pageSize}
+ </select>
+
+    <select id="queryInfoBySaleOrderNo" resultMap="resultMap" parameterType="java.lang.String">
+        select <include refid="baseSql"/> from IFT_TICKET_SUMMARY where `SALE_ORDER_NO` =#{saleOrderNo}
+    </select>
+
+    <delete id="deletInfoBySaleOrderNo" parameterType="java.lang.String">
+        delete  from IFT_TICKET_SUMMARY where `SALE_ORDER_NO` =#{saleOrderNo}
+    </delete>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tempus.cn.gss.dao.BuyOrderInfoMapper">
+    <resultMap id="resultMap" type="com.tempus.cn.gss.bean.BuyOrderInfoModel">
+        <result property="buyLocker" javaType="java.lang.String" column="BUY_LOCKER"/>
+        <result property="buyOrderNo" javaType="java.lang.String" column="BUY_ORDER_NO"/>
+        <result property="channel" javaType="java.lang.String" column="SUPPLIER_NAME"/>
+    </resultMap>
+
+    <select id="qeuryBuyOrderInfo" parameterType="java.lang.String" resultMap="resultMap">
+        select t.`ID`,t.`BUY_LOCKER`,t.`BUY_ORDER_NO`,cs.`NAME` as SUPPLIER_NAME
+         from IFT_BUY_ORDER_EXT t
+          left  join OS_BUYORDER a
+        on  t.`BUY_ORDER_NO` = a.`BUY_ORDER_NO`
+        left join CPS_SUPPLIER cs
+        on a.`SUPPLIER_NO`= cs.`SUPPLIER_NO`
+        where a.`SALE_ORDER_NO`=#{saleOrderNo}
+
+    </select>
+</mapper>

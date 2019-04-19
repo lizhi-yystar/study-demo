@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tempus.cn.gss.dao.BaseInfoMapper">
+    <resultMap id="resultMap" type="com.tempus.cn.gss.bean.BaseInfoModel">
+        <result column="ID" property="id" jdbcType="BIGINT"/>
+        <result column="SALE_ORDER_NO" property="saleOrderNo" jdbcType="BIGINT"/>
+        <result column="LOCKER" property="locker" jdbcType="BIGINT"/>
+        <result column="ISSUE_TIME" property="issueTime" jdbcType="TIMESTAMP"/>
+        <result column="SALE_CURRENCY" property="saleCurrency" jdbcType="VARCHAR"/>
+        <result column="EXCHANGE_RATE" property="exchangeRate" jdbcType="DECIMAL"/>
+        <result column="CUSTOMER_NO" property="customerNo" jdbcType="BIGINT"/>
+        <result column="NAME" property="company" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="pageQuery" parameterType="java.util.Map" resultMap="resultMap">
+        select t.`ID`,t.`SALE_ORDER_NO`,t.`LOCKER`,t.`ISSUE_TIME`,
+        t.`SALE_CURRENCY`,t.`EXCHANGE_RATE`,os.`CUSTOMER_NO`,so.`NAME`
+        from IFT_SALE_ORDER_EXT t
+        left join OS_SALEORDER os
+        on t.`SALE_ORDER_NO` = os.`SALE_ORDER_NO`
+        left join SM_OWNER_INFO so
+        on t.`OWNER` = so.`OWNER`
+        where t.`SYNCH_STATUS`=0
+        AND t.ISSUE_TIME is NOT NULL
+        and os.`PAY_STATUS` in(3,4)
+        <if test="startDate !=null and startDate !=''">
+            <![CDATA[
+            and t.`CREATE_TIME` >= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+             ]]>
+        </if>
+        order by id desc
+        limit  #{_skiprows}, #{_pagesize}
+    </select>
+
+    <update id="updateSynchronizeStatus" parameterType="java.lang.String">
+        update IFT_SALE_ORDER_EXT set `SYNCH_STATUS`=1 where `SALE_ORDER_NO` =#{saleOrderNo}
+    </update>
+</mapper>

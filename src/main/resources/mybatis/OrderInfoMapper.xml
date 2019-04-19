@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tempus.cn.gss.dao.OrderInfoMapper">
+        <resultMap id="passengerInfoMap" type="com.tempus.cn.gss.bean.PassengerInfoModel">
+        <result property="passengerNo" javaType="java.lang.String" column="PASSENGER_NO"/>
+        <result property="sureName" javaType="java.lang.String" column="SURNAME"/>
+        <result property="name" javaType="java.lang.String" column="NAME"/>
+        <result property="ticketType" javaType="java.lang.String" column="TICKET_TYPE"/>
+        <result property="shoppingTicketPrice" javaType="java.math.BigDecimal" column="BUY_FARE"/>
+        <result property="shoppingTax" javaType="java.math.BigDecimal" column="BUY_TAX"/>
+        <result property="shoppingRebate" javaType="java.math.BigDecimal" column="BUY_REBATE"/>
+        <result property="shoppingAwardPrice" javaType="java.math.BigDecimal" column="BUY_AWARD_PRICE"/>
+        <result property="shoppingPrice" javaType="java.math.BigDecimal" column="BUY_PRICE"/>
+        <result property="saleTicketPrice" javaType="java.math.BigDecimal" column="SALE_FARE"/>
+        <result property="saleTax" javaType="java.math.BigDecimal" column="SALE_TAX"/>
+        <result property="serviceFee" javaType="java.math.BigDecimal" column="SALE_BROKERAGE"/>
+        <result property="saleRebate" javaType="java.math.BigDecimal" column="SALE_REBATE"/>
+        <result property="saleAwardPrice" javaType="java.math.BigDecimal" column="SALE_AWARD_PRICE"/>
+        <result property="salePrice" javaType="java.math.BigDecimal" column="SALE_PRICE"/>
+        <result property="departmentProfit" javaType="java.math.BigDecimal" column="DEPT_PROFIT"/>
+        <result property="profit" javaType="java.math.BigDecimal" column="PROFIT"/>
+    </resultMap>
+
+    <resultMap id="orderDetailMap" type="com.tempus.cn.gss.bean.OrderDetailInfoModel">
+        <result property="ticketNo" javaType="java.lang.String" column="TICKET_NO"/>
+        <result property="cabinPrice" javaType="java.math.BigDecimal" column="CABIN_PRICE"/>
+        <result property="saleOrderNo" javaType="java.lang.String" column="SALE_ORDER_NO"/>
+        <result property="passengerNo" javaType="java.lang.String" column="PASSENGER_NO"/>
+        <result property="legNo" javaType="java.lang.String" column="LEG_NO"/>
+        <result property="deptAirPort" javaType="java.lang.String" column="DEP_AIRPORT"/>
+        <result property="stopAirPort" javaType="java.lang.String" column="STOP_AIRPORT"/>
+        <result property="arrAirPort" javaType="java.lang.String" column="ARR_AIRPORT"/>
+        <result property="airLine" javaType="java.lang.String" column="AIRLINE"/>
+        <result property="flightNo" javaType="java.lang.String" column="FLIGHT_NO"/>
+        <result property="cabin" javaType="java.lang.String" column="CABIN"/>
+        <result property="takeOffTime" javaType="java.util.Date" column="DEP_TIME"/>
+    </resultMap>
+
+    <resultMap id="legResultMap" type="com.tempus.cn.gss.bean.LegInfoModel">
+        <result property="legNo" javaType="java.lang.String" column="LEG_NO"/>
+        <result property="airLine" javaType="java.lang.String" column="AIRLINE"/>
+        <result property="flightNo" javaType="java.lang.String" column="FLIGHT_NO"/>
+        <result property="deptAirPort" javaType="java.lang.String" column="DEP_AIRPORT"/>
+        <result property="stopAirPort" javaType="java.lang.String" column="STOP_AIRPORT"/>
+        <result property="arrAirPort" javaType="java.lang.String" column="ARR_AIRPORT"/>
+        <result property="deptTime" javaType="java.util.Date" column="DEP_TIME"/>
+        <result property="cabin" javaType="java.lang.String" column="CABIN"/>
+    </resultMap>
+
+    <select id="queryPassengerInfoBySaleOrderNo" resultMap="passengerInfoMap" parameterType="java.lang.String">
+        select `ID`,`PASSENGER_NO`,`SURNAME`,`NAME`,`TICKET_TYPE`,`BUY_FARE`,`BUY_TAX`,
+        `BUY_REBATE`,`BUY_AWARD_PRICE`,`BUY_PRICE`,`SALE_FARE`,`SALE_TAX`,
+        `SALE_BROKERAGE`,`SALE_REBATE`,`SALE_AWARD_PRICE`,`SALE_PRICE`,
+        `DEPT_PROFIT`,`PROFIT`
+        from IFT_PASSENGER t
+        where t.`SALE_ORDER_NO`=#{saleOrderNo}
+    </select>
+
+    <select id="queryLegInfoBySaleOrderNo" parameterType="java.lang.String" resultMap="legResultMap">
+        select `ID`,`LEG_NO`,`AIRLINE`,`FLIGHT_NO`,`DEP_AIRPORT`,`STOP_AIRPORT`,`ARR_AIRPORT`,`DEP_TIME`,`CABIN`
+        from IFT_LEG t
+        where t.`SALE_ORDER_NO`=#{saleOrderNo}
+        order by `DEP_TIME` asc
+    </select>
+
+    <select id="queryLegTicketNoByLegs" resultMap="orderDetailMap" parameterType="java.util.Map">
+        select `ID`,`TICKET_NO`,`CABIN_PRICE`,`SALE_ORDER_NO`,`PASSENGER_NO`,`LEG_NO`
+        from IFT_SALE_ORDER_DETAIL t
+        where t.`SALE_ORDER_NO`=#{saleOrderNo}
+        and t.`LEG_NO`=#{legNo}
+        and t.`PASSENGER_NO`=#{passengerNo}
+    </select>
+
+    <select id="queryTicketLegDetails" parameterType="java.lang.String" resultMap="orderDetailMap">
+        select d.`ID`,d.`TICKET_NO`,d.`CABIN_PRICE`,d.`SALE_ORDER_NO`,d.`PASSENGER_NO`,d.`LEG_NO`,
+           l.`DEP_AIRPORT`,l.`STOP_AIRPORT`,l.`ARR_AIRPORT`,l.`AIRLINE`,l.`FLIGHT_NO`,d.`CABIN`,
+           l.`DEP_TIME`
+            from IFT_SALE_ORDER_DETAIL d left join IFT_LEG l
+             on d.LEG_NO = l.LEG_NO
+        where d.SALE_ORDER_NO= #{saleOrderNo}
+    </select>
+
+</mapper>
